@@ -29,8 +29,7 @@ def get_list_of_titles(authorization_sb_code: str) -> list[str]:
 def send_to_channels(channels: list[str], message: str, bot_token: str) -> None:
     for ch in channels:
         bot = Bot(token=bot_token)
-        asyncio.run(bot.send_message(chat_id=ch, text=message, parse_mode="MarkdownV2"))
-
+        asyncio.run(bot.send_message(chat_id=ch, text=message))
 
 
 def main():
