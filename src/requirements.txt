@@ -1,0 +1,4 @@
+requests
+cachetools
+pydantic-settings
+python-telegram-bot
