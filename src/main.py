@@ -38,22 +38,27 @@ def main():
     sb_settings = SbSettings()
 
     titles = get_list_of_titles(sb_settings.authorization_sb_code)
-    today_title = random.choice(titles)
-    print(f"Тема {today_title}")
-    today_post = get_giga_chat_answer(
-        message=today_title,
-        context=ChatContext.GET_POST_CONTEXT.value,
-        authorization_sb_code=sb_settings.authorization_sb_code
-    )
-    print(today_post)
+    while True:
+        today_title = random.choice(titles)
+        print(f"Тема {today_title}")
+        today_post = get_giga_chat_answer(
+            message=today_title,
+            context=ChatContext.GET_POST_CONTEXT.value,
+            authorization_sb_code=sb_settings.authorization_sb_code
+        )
+        print(today_post)
+        if len(today_post) < 200 or len(today_post) > 1000:
+            print("Post too small or too long")
+            continue
 
-    picture = get_picture(today_title)
-    send_to_channels(
-        channels=tg_settings.chanel_names,
-        message=today_post,
-        bot_token=tg_settings.bot_token,
-        picture=picture
-    )
+        picture = get_picture(today_title)
+        send_to_channels(
+            channels=tg_settings.chanel_names,
+            message=today_post,
+            bot_token=tg_settings.bot_token,
+            picture=picture
+        )
+        return
 
 
 if __name__ == "__main__":
