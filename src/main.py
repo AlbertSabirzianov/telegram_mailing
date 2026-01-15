@@ -13,7 +13,7 @@ def send_to_channels(channels: list[str], message: str, bot_token: str, picture:
         while True:
             try:
                 bot = Bot(token=bot_token)
-                asyncio.run(bot.send_photo(chat_id=ch, caption=message, photo=picture))
+                asyncio.run(bot.send_photo(chat_id=ch, caption=message.replace("*", ""), photo=picture))
                 break
             except:
                 print("Can't send to telegramm ....")
