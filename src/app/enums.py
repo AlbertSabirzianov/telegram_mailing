@@ -1,13 +1,6 @@
 from enum import Enum
 
 
-class ChatMessage(Enum):
-    GET_TITLES_QUERY = (
-        "мне нужны темы для телеграм поста посвещенные джазовой музыки"
-        " (возможно известный музыкант, событие, стиль, все что угодно)"
-    )
-
-
 class ChatContext(Enum):
     GET_TITLES_CONTEXT = "верни мне только список названий тем для поста"
     GET_POST_CONTEXT = (
