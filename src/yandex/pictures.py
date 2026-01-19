@@ -38,6 +38,20 @@ def connection_problems_decorator(func):
     return wrapper
 
 class SDriver:
+    """
+    Контекстный менеджер для инициализации и корректного завершения
+    Selenium WebDriver с настройками для скрытия автоматизации.
+
+    Использует ChromeDriver с опциями:
+        - headless режим
+        - отключение sandbox и shared memory
+        - применение stealth-методов для маскировки автоматизации
+        - установка пользовательского User-Agent
+
+    Пример использования:
+        with SDriver() as driver:
+            driver.get("https://example.com")
+    """
     def __enter__(self):
         options = Options()
         options.add_argument('--no-sandbox')
@@ -69,6 +83,26 @@ class SDriver:
 
 @connection_problems_decorator
 def get_picture(q: str) -> bytes:
+    """
+    Получает изображение по запросу из яндекса.
+
+    Логика работы:
+    1. Открывает страницу поиска изображений Яндекса с заданным текстом запроса.
+    2. Ожидает загрузки элементов изображений.
+    3. Случайным образом выбирает одно из найденных изображений.
+    4. Загружает изображение по URL через requests.
+    5. Возвращает содержимое изображения в байтах.
+
+    Параметры:
+        q (str): Текст запроса для поиска изображения.
+
+    Возвращает:
+        bytes: Содержимое изображения в бинарном формате.
+
+    Особенности:
+        - Использует Selenium в headless режиме с маскировкой автоматизации.
+        - В случае ошибок повторяет попытку загрузки бесконечно благодаря декоратору.
+    """
     with SDriver() as driver:
         driver.get(Y_URL.replace("<q_text>", q))
         img_elements = WebDriverWait(driver, 10).until(

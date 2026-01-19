@@ -12,6 +12,21 @@ urls = SbUrls()
 
 @cached(TTLCache(ttl=config.token_leave_time_in_seconds, maxsize=10))
 def __get_token(authorization_sb_code: str) -> str:
+    """
+    Получает и кеширует OAuth токен доступа для GigaChat API.
+
+    Параметры:
+        authorization_sb_code (str): Код авторизации в формате Basic для получения токена.
+
+    Возвращает:
+        str: Токен доступа (access_token).
+
+    Особенности:
+        - Использует POST-запрос с заголовками и payload для получения токена.
+        - Кеширует результат с помощью TTLCache на время, заданное в конфигурации (token_leave_time_in_seconds).
+        - Максимальный размер кеша — 10 токенов.
+        - Генерирует уникальный RqUID для каждого запроса.
+    """
     payload ='scope=GIGACHAT_API_PERS'
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -30,6 +45,22 @@ def __get_token(authorization_sb_code: str) -> str:
 
 
 def get_giga_chat_answer(message: str, context: str, authorization_sb_code: str) -> str:
+    """
+    Отправляет запрос к GigaChat API для получения ответа на заданное сообщение в указанном контексте.
+
+    Параметры:
+        message (str): Текст запроса пользователя.
+        context (str): Контекст системного сообщения, задающий стиль и цель ответа.
+        authorization_sb_code (str): Код авторизации для получения токена доступа.
+
+    Возвращает:
+        str: Текст ответа, сгенерированного GigaChat.
+
+    Особенности:
+        - Формирует JSON payload с моделью, сообщениями и параметрами.
+        - Использует токен доступа, полученный через __get_token, в заголовках.
+        - В случае сетевых ошибок повторяет попытку запроса бесконечно с выводом сообщения об ошибке.
+    """
     payload = json.dumps({
         "model": "GigaChat",
         "messages": [
