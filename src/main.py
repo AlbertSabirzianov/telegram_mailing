@@ -24,29 +24,21 @@ def main():
     sb_settings = SbSettings()
 
     today_title = input("\n\n Введите тему поста: ")
-    while True:
-        print(f"Тема {today_title}")
-        today_post = get_giga_chat_answer(
-            message=today_title,
-            context=ChatContext.GET_POST_CONTEXT.value,
-            authorization_sb_code=sb_settings.authorization_sb_code
-        )
-        print(today_post)
-        if len(today_post) < 200 or len(today_post) > 1000:
-            print("Post too small or too long")
-            continue
-        try:
-            picture = get_picture(today_title)
-        except Exception:
-            with open("img.png", "rb") as file:
-                picture = file.read()
-        send_to_channels(
-            channels=tg_settings.chanel_names,
-            message=today_post,
-            bot_token=tg_settings.bot_token,
-            picture=picture
-        )
-        return
+    print(f"Тема {today_title}")
+
+    today_post = get_giga_chat_answer(
+        message=today_title,
+        context=ChatContext.GET_POST_CONTEXT.value,
+        authorization_sb_code=sb_settings.authorization_sb_code
+    )
+    print(today_post)
+
+    send_to_channels(
+        channels=tg_settings.chanel_names,
+        message=today_post,
+        bot_token=tg_settings.bot_token,
+        picture=get_picture(today_title)
+    )
 
 
 if __name__ == "__main__":
