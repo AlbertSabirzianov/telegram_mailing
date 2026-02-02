@@ -5,8 +5,11 @@ from telegram import Bot
 
 from app.settings import SbSettings, TgSettings
 from app.enums import ChatContext
+from app.utils import shorten_text_by_paragraphs
 from gigachat.chat import get_giga_chat_answer
 from yandex.pictures import get_picture
+from wiki import get_article_from_wiki
+
 
 def send_to_channels(channels: list[str], message: str, bot_token: str, picture: bytes) -> None:
     """
@@ -39,9 +42,11 @@ def main():
     Логика работы:
     1. Загружает настройки Telegram и Sb из конфигурационных классов.
     2. Запрашивает у пользователя тему поста.
-    3. Получает текст поста с помощью функции get_giga_chat_answer, используя тему и контекст.
-    4. Получает изображение по теме с помощью функции get_picture.
-    5. Отправляет сформированный пост с изображением в указанные Telegram-каналы.
+    3. Выполняет поиск статьи в Википедии по теме и добавляет её содержимое в контекст.
+    4. Получает текст поста с помощью функции get_giga_chat_answer, используя тему и расширенный контекст.
+    5. При необходимости сокращает текст поста до 1000 символов, обрезая по абзацам.
+    6. Получает изображение по теме с помощью функции get_picture.
+    7. Отправляет сформированный пост с изображением в указанные Telegram-каналы.
     """
     tg_settings = TgSettings()
     sb_settings = SbSettings()
@@ -51,10 +56,15 @@ def main():
 
     today_post = get_giga_chat_answer(
         message=today_title,
-        context=ChatContext.GET_POST_CONTEXT.value,
+        context=ChatContext.GET_POST_CONTEXT.value + get_article_from_wiki(today_title),
         authorization_sb_code=sb_settings.authorization_sb_code
     )
     print(today_post)
+
+    if len(today_post) > 1000:
+        today_post = shorten_text_by_paragraphs(today_post, 1000)
+        print("=" * 8)
+        print(today_post)
 
     send_to_channels(
         channels=tg_settings.chanel_names,

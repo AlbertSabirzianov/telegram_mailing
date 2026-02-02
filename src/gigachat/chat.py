@@ -5,12 +5,14 @@ import requests
 from cachetools import TTLCache, cached
 
 from .config import Config, SbUrls
+from app.utils import connection_problems_decorator
 
 config = Config()
 urls = SbUrls()
 
 
 @cached(TTLCache(ttl=config.token_leave_time_in_seconds, maxsize=10))
+@connection_problems_decorator
 def __get_token(authorization_sb_code: str) -> str:
     """
     Получает и кеширует OAuth токен доступа для GigaChat API.
