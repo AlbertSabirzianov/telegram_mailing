@@ -1,4 +1,5 @@
 import asyncio
+import warnings
 
 from dotenv import load_dotenv
 from telegram import Bot
@@ -7,7 +8,7 @@ from app.settings import SbSettings, TgSettings
 from app.enums import ChatContext
 from app.utils import shorten_text_by_paragraphs
 from gigachat.chat import get_giga_chat_answer
-from yandex.pictures import get_picture
+from yandex import get_picture, get_article
 from wiki import get_article_from_wiki
 
 
@@ -54,9 +55,14 @@ def main():
     today_title = input("\n\n Введите тему поста: ")
     print(f"Тема {today_title}")
 
+    article = get_article(today_title)
+    if not article:
+        warnings.warn("Cant get article from yandex")
+        article = get_article_from_wiki(today_title)
+
     today_post = get_giga_chat_answer(
         message=today_title,
-        context=ChatContext.GET_POST_CONTEXT.value + get_article_from_wiki(today_title),
+        context=ChatContext.GET_POST_CONTEXT.value + article,
         authorization_sb_code=sb_settings.authorization_sb_code
     )
     print(today_post)

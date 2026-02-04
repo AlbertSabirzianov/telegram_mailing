@@ -6,3 +6,4 @@ selenium==4.27.1
 webdriver-manager==4.0.2
 selenium-stealth==1.0.6
 wikipedia==1.4.0
+newspaper3k
