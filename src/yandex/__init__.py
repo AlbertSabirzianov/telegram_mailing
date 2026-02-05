@@ -16,6 +16,8 @@ from app.utils import connection_problems_decorator
 
 Y_URL = "https://yandex.ru/images/search?from=tabbar&text=<q_text>"
 
+EXCLUDE_SUBSTRINGS = ["yandex", "dzen"]
+
 
 class SDriver:
     """
@@ -102,11 +104,20 @@ def get_article(q: str) -> str:
         input_el = driver.find_element(By.CSS_SELECTOR, "input")
         input_el.click()
         time.sleep(5)
+        driver.execute_script("""
+            let el = document.querySelector('.DistributionSplashScreenModalScene');
+            if (el) {
+                el.style.display = 'none';
+            }
+        """)
         a_elements = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.Link.organic__greenurl"))
         )
-        urls = [a.get_attribute("href") for a in a_elements if "yandex" not in a.get_attribute("href")]
-
+        urls = [a.get_attribute("href") for a in a_elements]
+        urls = [
+            s for s in urls
+            if not any(sub in s.lower() for sub in EXCLUDE_SUBSTRINGS)
+        ]
     for url in urls:
         try:
             article = Article(url)
