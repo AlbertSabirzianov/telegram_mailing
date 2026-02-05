@@ -100,16 +100,14 @@ def get_picture(q: str) -> bytes:
 def get_article(q: str) -> str:
     with SDriver() as driver:
         driver.get(f"https://yandex.ru/search/?text={q}")
-        time.sleep(5)
         input_el = driver.find_element(By.CSS_SELECTOR, "input")
-        input_el.click()
-        time.sleep(5)
         driver.execute_script("""
             let el = document.querySelector('.DistributionSplashScreenModalScene');
             if (el) {
                 el.style.display = 'none';
             }
         """)
+        input_el.click()
         a_elements = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.Link.organic__greenurl"))
         )
