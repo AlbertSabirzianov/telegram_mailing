@@ -57,12 +57,15 @@ def main():
 
     article = get_article(today_title)
     if not article:
-        warnings.warn("Cant get article from yandex")
+        warnings.warn("Cant get article from yandex, try from wiki")
         article = get_article_from_wiki(today_title)
+        if not article:
+            warnings.warn("Cant get article from wiki")
+    context = ChatContext.GET_POST_CONTEXT.value + article
 
     today_post = get_giga_chat_answer(
         message=today_title,
-        context=ChatContext.GET_POST_CONTEXT.value + article,
+        context=context,
         authorization_sb_code=sb_settings.authorization_sb_code
     )
     print(today_post)
@@ -76,7 +79,7 @@ def main():
         channels=tg_settings.chanel_names,
         message=today_post,
         bot_token=tg_settings.bot_token,
-        picture=get_picture(today_title)
+        picture=get_picture(today_post.split("\n\n")[0])
     )
 
 
