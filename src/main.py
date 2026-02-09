@@ -79,7 +79,7 @@ def main():
         channels=tg_settings.chanel_names,
         message=today_post,
         bot_token=tg_settings.bot_token,
-        picture=get_picture(today_post.split("\n\n")[0])
+        picture=get_picture(today_title)
     )
 
 
